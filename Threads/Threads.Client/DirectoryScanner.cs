@@ -1,30 +1,47 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using Threads.Domain;
 using Threads.Services;
 
 namespace Threads.Client
 {
-    public class DirectoryInvestigator
+    public class DirectoryScanner
     {
         private string Path { get; set; }
         private TreeView Tree { get; set; }
-        private XmlEntryHandler _xmlEventHandler;
-        private TreeEntryHandler _treeEventHandler;
+        private readonly XmlEntryHandler _xmlEntryHandler;
+        private readonly TreeEntryHandler _treeEntryHandler;
+        private readonly Thread _treeWrittingThread;
+        private readonly Thread _xmlWrittingThread;
+        private readonly ProgressBar _progressBar;
+        private readonly Label _label;
 
-        public DirectoryInvestigator(string path, TreeView tree)
+        
+        public DirectoryScanner(string path, TreeView tree, ProgressBar progressBar, Label currentSystemInfoLabel)
         {
             Path = path;
             Tree = tree;
+
+            _xmlEntryHandler = new XmlEntryHandler();
+            _treeEntryHandler = new TreeEntryHandler(Tree);
+
+            _treeWrittingThread = new Thread(_treeEntryHandler.Write);
+            _xmlWrittingThread = new Thread(_xmlEntryHandler.Write);
+            _progressBar = progressBar;
+            _label = currentSystemInfoLabel;
         }
 
-        public void Investigate()
+        public void Scan()
         {
-            _xmlEventHandler = new XmlEntryHandler();
-            _treeEventHandler = new TreeEntryHandler(Tree);
-            Entry root = new Entry { IsRoot = true };
+            _treeWrittingThread.Start();
+            _xmlWrittingThread.Start();
+            
+            var root = new Entry { IsRoot = true };
 
             GetEntry(root);
+
+            FinishScanning();
         }
 
         private Entry GetEntry(Entry info)
@@ -43,6 +60,7 @@ namespace Threads.Client
             if (!Helpers.IsDirectory(Path))
             {
                 //todo pass entry for threads
+                PassEntry(entry);
                 return entry;
             }
 
@@ -52,11 +70,50 @@ namespace Threads.Client
             foreach (var fileSystemInfo in fileSystemInfos)
             {
                 //todo pass entry for threads
+                PassEntry(entry);
                 Path = fileSystemInfo.FullName;
                 GetEntry(entry);
             }
 
             return entry;
+        }
+
+        private void PassEntry(Entry entry)
+        {
+            PassEntryToHandlers(entry);
+            UpdateProgress(entry);
+        }
+
+        private void PassEntryToHandlers(Entry entry)
+        {
+            _treeEntryHandler.AddEntryToQueue(entry);
+            _xmlEntryHandler.AddEntryToQueue(entry);
+            
+        }
+
+        private void UpdateProgress(Entry entry)
+        {
+            _label.BeginInvoke((MethodInvoker)delegate
+            {
+                _label.Text = Path;
+            });
+
+            _progressBar.BeginInvoke((MethodInvoker)delegate
+            {
+                if(_progressBar.Value < _progressBar.Maximum)
+                     _progressBar.Value++;
+            });
+        }
+
+        private void FinishScanning()
+        {
+            _label.BeginInvoke((MethodInvoker)delegate
+            {
+                _label.Text = "";
+            });
+            
+            _treeEntryHandler.Stop();
+            _xmlEntryHandler.Stop();
         }
     }
 }

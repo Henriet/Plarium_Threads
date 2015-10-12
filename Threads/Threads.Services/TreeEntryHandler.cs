@@ -1,17 +1,20 @@
 ﻿using System.Windows.Forms;
+using Threads.Domain;
 
 namespace Threads.Services
 {
-    public class TreeEntryHandler
+    public class TreeEntryHandler : BaseEntryHanbler
     {
         private TreeView _tree;
+
         public TreeEntryHandler(TreeView tree)
         {
             _tree = tree;
         }
-        public void AddNewEntry(object param)
+
+        protected override void WriteEntry(Entry entry)
         {
-            
+            //todo
         }
     }
 }

@@ -1,11 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml;
 using System.Xml.Linq;
+using Threads.Domain;
 
 namespace Threads.Services
 {
-    public class XmlEntryHandler
+    public class XmlEntryHandler : BaseEntryHanbler
     {
+        private static int count;
         private XDocument _xmlDocument;
 
         public XmlEntryHandler()
@@ -50,6 +53,10 @@ namespace Threads.Services
                 );
             if (_xmlDocument.Root != null) _xmlDocument.Root.Add(entryNode);
         }*/
+        protected override void WriteEntry(Entry entry)
+        {
+            //todo
+        }
     }
  
 }

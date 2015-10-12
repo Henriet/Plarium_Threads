@@ -18,6 +18,8 @@ namespace Threads.Client
             saveFileDialog.DefaultExt = Resources.MainForm_Text_file_extension;
 
             FolderBrowser.Description = Resources.MainForm_FolderBrowserDialog_Description_Select_folder_to_scan;
+            progressBar.Step = 1;
+            progressBar.Value = 0;
         }
 
         private void StartClick(object sender, EventArgs e)
@@ -25,11 +27,11 @@ namespace Threads.Client
             if (_directorySelected && _fileSelected)
             {
                 var selectedPath = FolderBrowser.SelectedPath;
+                progressBar.Maximum = Helpers.GetCountOfEntries(selectedPath);
 
-                var investigator = new DirectoryInvestigator(selectedPath, treeView);
-                progressBar.Step = Helpers.GetCountOfEntries(selectedPath);
+                var scanner = new DirectoryScanner(selectedPath, treeView, progressBar, CurrentFileNameLabel);
 
-                var thread = new Thread(() => investigator.Investigate());
+                var thread = new Thread(() => scanner.Scan());
                 thread.Start();
 
             }
@@ -59,7 +61,7 @@ namespace Threads.Client
             SelectedFileNameLabel.Text = saveFileDialog.FileName;
         }
 
-        private void AddNewNode(string name)
+        private void UpdateProggress(string name)
         {
             progressBar.Value++;
             CurrentFileNameLabel.Text = name;
