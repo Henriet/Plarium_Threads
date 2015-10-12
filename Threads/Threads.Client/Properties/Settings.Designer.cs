@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ThreadsTest.Properties
+namespace Threads.Client.Properties
 {
 
 

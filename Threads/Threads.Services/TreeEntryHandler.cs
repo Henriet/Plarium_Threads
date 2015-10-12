@@ -1,8 +1,8 @@
 ﻿using System.Windows.Forms;
 
-namespace ThreadsTest
+namespace Threads.Services
 {
-    public class TreeEntryHandler : IEntryHandler
+    public class TreeEntryHandler
     {
         private TreeView _tree;
         public TreeEntryHandler(TreeView tree)

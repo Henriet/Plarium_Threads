@@ -2,9 +2,9 @@
 using System.Xml;
 using System.Xml.Linq;
 
-namespace ThreadsTest
+namespace Threads.Services
 {
-    public class XmlEntryHandler : IEntryHandler
+    public class XmlEntryHandler
     {
         private XDocument _xmlDocument;
 
@@ -13,7 +13,7 @@ namespace ThreadsTest
             _xmlDocument = new XDocument();
             
         }
-
+/*
         public void AddNewEntry(object param)
         {
             var xmlParams = (EntryHandlerParameters)param;
@@ -49,6 +49,7 @@ namespace ThreadsTest
                 new XElement("Size", param.Size.ToString())
                 );
             if (_xmlDocument.Root != null) _xmlDocument.Root.Add(entryNode);
-        }
+        }*/
     }
+ 
 }
