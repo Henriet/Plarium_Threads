@@ -61,11 +61,47 @@ namespace Threads.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string MainForm_Error {
+            get {
+                return ResourceManager.GetString("MainForm_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select folder to scan.
+        /// </summary>
+        internal static string MainForm_FolderBrowserDialog_Description_Select_folder_to_scan {
+            get {
+                return ResourceManager.GetString("MainForm_FolderBrowserDialog_Description_Select_folder_to_scan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please, select file and folder.
         /// </summary>
         internal static string MainForm_StartClick_Please__select_file_and_folder {
             get {
                 return ResourceManager.GetString("MainForm_StartClick_Please__select_file_and_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to *.txt.
+        /// </summary>
+        internal static string MainForm_Text_file_extension {
+            get {
+                return ResourceManager.GetString("MainForm_Text_file_extension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text files (*.txt)|*.txt.
+        /// </summary>
+        internal static string MainForm_TextFilesExtension {
+            get {
+                return ResourceManager.GetString("MainForm_TextFilesExtension", resourceCulture);
             }
         }
     }

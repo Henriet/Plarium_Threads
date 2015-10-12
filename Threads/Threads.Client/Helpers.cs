@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Threads.Domain;
 
@@ -6,21 +7,21 @@ namespace Threads.Client
 {
     public class Helpers
     {
-        public EntryInfo EntryInfo { get; set; }
-
-        private void GetEntryInfo(string path)
+        public static EntryInfo GetEntryInfo(string path)
         {
-            EntryInfo.EntryType = IsDirectory(path) ? EntryType.Directory : EntryType.File;
+            Path = path;
+            var entryInfo = new EntryInfo();
+            entryInfo.EntryType = IsDirectory(path) ? EntryType.Directory : EntryType.File;
             FileSystemInfo entry = IsDirectory(path)
                 ? (FileSystemInfo) new DirectoryInfo(path)
                 : new FileInfo(path);
 
-            EntryInfo.Name = entry.Name;
-            EntryInfo.CreationTime = entry.CreationTime;
-            EntryInfo.LastDataAccessTime = entry.LastAccessTime;
-            EntryInfo.ModificationTime = entry.LastWriteTime;
+            entryInfo.Name = entry.Name;
+            entryInfo.CreationTime = entry.CreationTime;
+            entryInfo.LastDataAccessTime = entry.LastAccessTime;
+            entryInfo.ModificationTime = entry.LastWriteTime;
 
-            EntryInfo.Owner = _isDirectory
+            entryInfo.Owner = _isDirectory
                 ? Directory.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString()
                 : File.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString();
             if (_isDirectory)
@@ -28,25 +29,34 @@ namespace Threads.Client
                 var directory = (DirectoryInfo) entry;
                 var directories = directory.GetFiles();
 
-                EntryInfo.Size = directories.Select(fileInfo => fileInfo.Length).Sum();
+                entryInfo.Size = directories.Select(fileInfo => fileInfo.Length).Sum();
             }
             else
             {
                 var file = (FileInfo) entry;
-                EntryInfo.Size = file.Length;
+                entryInfo.Size = file.Length;
             }
 
-            //todo
-            
+            return entryInfo;
+
         }
 
         public static bool IsDirectory(string path)
         {
-            return Directory.Exists(path);//todo
+            return Directory.Exists(path);
         }
 
-        private bool _isDirectory { get;
-            set;
+
+        private static string Path { get; set; }
+        private static bool _isDirectory { get { return IsDirectory(Path); } }
+
+        public static int GetCountOfEntries(string path)
+        {
+            if(!Directory.Exists(path))
+                throw new ArgumentException();
+
+            var directoryInfo = new DirectoryInfo(path);
+            return directoryInfo.GetFileSystemInfos().Length;
         }
     }
 }

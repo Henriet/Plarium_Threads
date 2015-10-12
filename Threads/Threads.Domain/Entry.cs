@@ -9,5 +9,10 @@ namespace Threads.Domain
         public EntryInfo Info { get; set; }
         public bool IsRoot { get; set; }
         public bool HasChildren { get; set; }
+
+        public Entry()
+        {
+            Children = new List<Entry>();
+        }
     }
 }

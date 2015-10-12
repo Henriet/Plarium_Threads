@@ -12,21 +12,31 @@ namespace Threads.Client
         public MainForm()
         {
             InitializeComponent();
+            saveFileDialog.AddExtension = true;
+            saveFileDialog.Filter = Resources.MainForm_TextFilesExtension;
+            saveFileDialog.CheckPathExists = true;
+            saveFileDialog.DefaultExt = Resources.MainForm_Text_file_extension;
+
+            FolderBrowser.Description = Resources.MainForm_FolderBrowserDialog_Description_Select_folder_to_scan;
         }
 
         private void StartClick(object sender, EventArgs e)
         {
             if (_directorySelected && _fileSelected)
             {
-                var investigator = new DirectoryInvestigator(FolderBrowser.SelectedPath, treeView);
-                //progressBar.Step = investigator.GetCount(); todo move count to helpers
-                var thread = new Thread(() => investigator.Investigate());
+                var selectedPath = FolderBrowser.SelectedPath;
 
+                var investigator = new DirectoryInvestigator(selectedPath, treeView);
+                progressBar.Step = Helpers.GetCountOfEntries(selectedPath);
+
+                var thread = new Thread(() => investigator.Investigate());
                 thread.Start();
+
             }
             else
             {
-                MessageBox.Show(Resources.MainForm_StartClick_Please__select_file_and_folder);
+                MessageBox.Show(Resources.MainForm_StartClick_Please__select_file_and_folder, Resources.MainForm_Error, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -53,6 +63,11 @@ namespace Threads.Client
         {
             progressBar.Value++;
             CurrentFileNameLabel.Text = name;
+        }
+
+        private void ApplictionExit(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
 
     }

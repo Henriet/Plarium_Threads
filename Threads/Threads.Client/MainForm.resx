@@ -117,19 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MainForm_Error" xml:space="preserve">
-    <value>Error</value>
-  </data>
-  <data name="MainForm_FolderBrowserDialog_Description_Select_folder_to_scan" xml:space="preserve">
-    <value>Select folder to scan</value>
-  </data>
-  <data name="MainForm_StartClick_Please__select_file_and_folder" xml:space="preserve">
-    <value>Please, select file and folder</value>
-  </data>
-  <data name="MainForm_Text_file_extension" xml:space="preserve">
-    <value>*.txt</value>
-  </data>
-  <data name="MainForm_TextFilesExtension" xml:space="preserve">
-    <value>Text files (*.txt)|*.txt</value>
-  </data>
+  <metadata name="FolderBrowser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="Menu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>171, 17</value>
+  </metadata>
+  <metadata name="saveFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>267, 17</value>
+  </metadata>
 </root>
