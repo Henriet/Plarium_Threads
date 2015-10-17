@@ -28,6 +28,7 @@ namespace Threads.Client
             {
                 var selectedPath = FolderBrowser.SelectedPath;
                 progressBar.Maximum = Helpers.GetCountOfEntries(selectedPath);
+                progressBar.Value = 0;
 
                 var scanner = new DirectoryScanner(selectedPath, treeView, progressBar, CurrentFileNameLabel);
 
@@ -59,12 +60,6 @@ namespace Threads.Client
 
             _fileSelected = true;
             SelectedFileNameLabel.Text = saveFileDialog.FileName;
-        }
-
-        private void UpdateProggress(string name)
-        {
-            progressBar.Value++;
-            CurrentFileNameLabel.Text = name;
         }
 
         private void ApplictionExit(object sender, EventArgs e)

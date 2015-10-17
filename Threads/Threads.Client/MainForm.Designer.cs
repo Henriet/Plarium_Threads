@@ -46,14 +46,17 @@
             this.SelectedDirecoryLabel = new System.Windows.Forms.Label();
             this.SelectedDirectoryNameLabel = new System.Windows.Forms.Label();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.ChangeDirectoryButton = new System.Windows.Forms.Button();
+            this.ChangeFileButton = new System.Windows.Forms.Button();
+            this.StartButton = new System.Windows.Forms.Button();
             this.Menu.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView
             // 
-            this.treeView.Location = new System.Drawing.Point(16, 131);
+            this.treeView.Location = new System.Drawing.Point(16, 163);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(473, 294);
+            this.treeView.Size = new System.Drawing.Size(473, 262);
             this.treeView.TabIndex = 0;
             // 
             // progressBar
@@ -181,11 +184,44 @@
             this.SelectedDirectoryNameLabel.TabIndex = 9;
             this.SelectedDirectoryNameLabel.Text = ". . .";
             // 
+            // ChangeDirectoryButton
+            // 
+            this.ChangeDirectoryButton.Location = new System.Drawing.Point(414, 37);
+            this.ChangeDirectoryButton.Name = "ChangeDirectoryButton";
+            this.ChangeDirectoryButton.Size = new System.Drawing.Size(75, 23);
+            this.ChangeDirectoryButton.TabIndex = 10;
+            this.ChangeDirectoryButton.Text = "Change";
+            this.ChangeDirectoryButton.UseVisualStyleBackColor = true;
+            this.ChangeDirectoryButton.Click += new System.EventHandler(this.ChangeDirectoryButtonClick);
+            // 
+            // ChangeFileButton
+            // 
+            this.ChangeFileButton.Location = new System.Drawing.Point(414, 71);
+            this.ChangeFileButton.Name = "ChangeFileButton";
+            this.ChangeFileButton.Size = new System.Drawing.Size(75, 23);
+            this.ChangeFileButton.TabIndex = 11;
+            this.ChangeFileButton.Text = "Change";
+            this.ChangeFileButton.UseVisualStyleBackColor = true;
+            this.ChangeFileButton.Click += new System.EventHandler(this.ChangeFileButtonClick);
+            // 
+            // StartButton
+            // 
+            this.StartButton.Location = new System.Drawing.Point(16, 119);
+            this.StartButton.Name = "StartButton";
+            this.StartButton.Size = new System.Drawing.Size(473, 38);
+            this.StartButton.TabIndex = 12;
+            this.StartButton.Text = "Scan";
+            this.StartButton.UseVisualStyleBackColor = true;
+            this.StartButton.Click += new System.EventHandler(this.StartClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(524, 536);
+            this.Controls.Add(this.StartButton);
+            this.Controls.Add(this.ChangeFileButton);
+            this.Controls.Add(this.ChangeDirectoryButton);
             this.Controls.Add(this.SelectedDirectoryNameLabel);
             this.Controls.Add(this.SelectedDirecoryLabel);
             this.Controls.Add(this.CurrentFileNameLabel);
@@ -225,6 +261,9 @@
         private System.Windows.Forms.ToolStripMenuItem scanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showHelpToolStripMenuItem;
+        private System.Windows.Forms.Button ChangeDirectoryButton;
+        private System.Windows.Forms.Button ChangeFileButton;
+        private System.Windows.Forms.Button StartButton;
     }
 }
 

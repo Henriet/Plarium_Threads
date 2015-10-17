@@ -44,11 +44,11 @@ namespace Threads.Client
             FinishScanning();
         }
 
-        private Entry GetEntry(Entry info)
+        private void GetEntry(Entry info)
         {
             var entry = new Entry();
             if (!Directory.Exists(Path) && !File.Exists(Path))
-                return entry;
+                return;
             entry.Info = Helpers.GetEntryInfo(Path);
 
             if (!info.IsRoot)
@@ -56,26 +56,22 @@ namespace Threads.Client
                 info.Children.Add(entry);
                 entry.Parent = info;
             }
+            PassEntry(entry);
 
             if (!Helpers.IsDirectory(Path))
             {
-                //todo pass entry for threads
-                PassEntry(entry);
-                return entry;
+                return;
             }
 
             var directoryInfo = new DirectoryInfo(Path);
             var fileSystemInfos = directoryInfo.GetFileSystemInfos();
-
+            
             foreach (var fileSystemInfo in fileSystemInfos)
             {
-                //todo pass entry for threads
-                PassEntry(entry);
                 Path = fileSystemInfo.FullName;
                 GetEntry(entry);
             }
 
-            return entry;
         }
 
         private void PassEntry(Entry entry)
@@ -95,7 +91,7 @@ namespace Threads.Client
         {
             _label.BeginInvoke((MethodInvoker)delegate
             {
-                _label.Text = Path;
+                _label.Text = entry.Info.FullName;
             });
 
             _progressBar.BeginInvoke((MethodInvoker)delegate

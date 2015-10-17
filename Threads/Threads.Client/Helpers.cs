@@ -10,20 +10,25 @@ namespace Threads.Client
         public static EntryInfo GetEntryInfo(string path)
         {
             Path = path;
-            var entryInfo = new EntryInfo();
-            entryInfo.EntryType = IsDirectory(path) ? EntryType.Directory : EntryType.File;
             FileSystemInfo entry = IsDirectory(path)
-                ? (FileSystemInfo) new DirectoryInfo(path)
-                : new FileInfo(path);
+               ? (FileSystemInfo)new DirectoryInfo(path)
+               : new FileInfo(path);
 
-            entryInfo.Name = entry.Name;
-            entryInfo.CreationTime = entry.CreationTime;
-            entryInfo.LastDataAccessTime = entry.LastAccessTime;
-            entryInfo.ModificationTime = entry.LastWriteTime;
+            var entryInfo = new EntryInfo
+            {
+                EntryType = IsDirectory(path) ? EntryType.Directory : EntryType.File,
+                Name = entry.Name,
+                FullName = entry.FullName,
+                CreationTime = entry.CreationTime,
+                LastDataAccessTime = entry.LastAccessTime,
+                ModificationTime = entry.LastWriteTime,
+                Owner = _isDirectory
+                    ? Directory.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString()
+                    : File.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString()
+            };
 
-            entryInfo.Owner = _isDirectory
-                ? Directory.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString()
-                : File.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString();
+
+
             if (_isDirectory)
             {
                 var directory = (DirectoryInfo) entry;
@@ -43,7 +48,8 @@ namespace Threads.Client
 
         public static bool IsDirectory(string path)
         {
-            return Directory.Exists(path);
+            FileAttributes attr = File.GetAttributes(path);
+            return (attr & FileAttributes.Directory) == FileAttributes.Directory && Directory.Exists(path);
         }
 
 
