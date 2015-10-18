@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Windows.Forms;
+using Threads.Client.Properties;
 using Threads.Domain;
 
 namespace Threads.Client
@@ -10,6 +13,7 @@ namespace Threads.Client
         public static EntryInfo GetEntryInfo(string path)
         {
             Path = path;
+            
             FileSystemInfo entry = IsDirectory(path)
                ? (FileSystemInfo)new DirectoryInfo(path)
                : new FileInfo(path);
@@ -22,30 +26,41 @@ namespace Threads.Client
                 LastDataAccessTime = entry.LastAccessTime,
                 ModificationTime = entry.LastWriteTime,
                 Owner = _isDirectory
-                    ? Directory.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString()
-                    : File.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString()
+                    ? Directory.GetAccessControl(path).GetOwner(typeof(System.Security.Principal.NTAccount)).ToString()
+                    : File.GetAccessControl(path).GetOwner(typeof(System.Security.Principal.NTAccount)).ToString()
             };
 
-                
+
 
             if (_isDirectory)
             {
-                var directory = (DirectoryInfo) entry;
                 try
                 {
+                    var directory = (DirectoryInfo)entry;
                     var directories = directory.GetFiles();
 
                     entryInfo.Size = directories.Select(fileInfo => fileInfo.Length).Sum().ToString();
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    entryInfo.Size = "Acess denided";
+                    entryInfo.Size = Resources.Access_Denided;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
                 }
             }
             else
             {
-                var file = (FileInfo) entry;
-                entryInfo.Size = file.Length.ToString();
+                try
+                {
+                    var file = (FileInfo)entry;
+                    entryInfo.Size = file.Length.ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+                }
             }
 
             return entryInfo;
@@ -63,7 +78,7 @@ namespace Threads.Client
 
         public static int GetCountOfEntries(string path)
         {
-            if(!Directory.Exists(path))
+            if (!Directory.Exists(path))
                 throw new ArgumentException();
 
             var directoryInfo = new DirectoryInfo(path);
@@ -84,7 +99,10 @@ namespace Threads.Client
                     count += directoryInfo.GetFiles().Length;
                 }
             }
-            catch(UnauthorizedAccessException) {  }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+            }
         }
     }
 }

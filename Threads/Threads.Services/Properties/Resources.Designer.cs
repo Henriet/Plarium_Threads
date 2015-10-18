@@ -61,6 +61,33 @@ namespace Threads.Services.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: \&quot;{0}\&quot;.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File is currently in use, please, close programs, that can use it.
+        /// </summary>
+        internal static string File_Is_Currently_In_Use {
+            get {
+                return ResourceManager.GetString("File_Is_Currently_In_Use", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, but you have no rights to write to selected file. Program will stop writting xml to it.
+        /// </summary>
+        internal static string Have_No_Write_Permissions {
+            get {
+                return ResourceManager.GetString("Have_No_Write_Permissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creation_Time.
         /// </summary>
         internal static string Service_Creation_Time {
@@ -102,6 +129,15 @@ namespace Threads.Services.Properties {
         internal static string Service_Last_Data_Access_Time {
             get {
                 return ResourceManager.GetString("Service_Last_Data_Access_Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot write xml to the file.
+        /// </summary>
+        internal static string Services_CannotWriteToTheFile {
+            get {
+                return ResourceManager.GetString("Services_CannotWriteToTheFile", resourceCulture);
             }
         }
         

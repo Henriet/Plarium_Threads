@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Forms;
+using Threads.Services.Properties;
 
 namespace Threads.Services
 {
@@ -10,19 +12,43 @@ namespace Threads.Services
         {
             _path = path;
         }
+
         public void WriteToFile(string text)
         {
-            using (StreamWriter fs = new StreamWriter(_path, true))
+            try
             {
-                fs.WriteLine(text);
+                using (StreamWriter fs = new StreamWriter(_path, true))
+                {
+                    fs.Write(text);
+                }
+            }
+            catch (IOException)
+            {
+                MessageBox.Show(Resources.File_Is_Currently_In_Use);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show(Resources.Have_No_Write_Permissions);
+                throw new UnauthorizedAccessException();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(Resources.Services_CannotWriteToTheFile);
             }
         }
 
         public void ClearFile()
         {
-            using (StreamWriter fs = new StreamWriter(_path, false))
+            try
             {
-                fs.Write(String.Empty);
+                using (StreamWriter fs = new StreamWriter(_path, false))
+                {
+                    fs.Write(String.Empty);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(Resources.Services_CannotWriteToTheFile);
             }
         }
     }

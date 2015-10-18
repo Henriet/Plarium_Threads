@@ -141,4 +141,16 @@
   <data name="Service_Last_Data_Access_Time" xml:space="preserve">
     <value>Last_Data_Access_Time</value>
   </data>
+  <data name="Services_CannotWriteToTheFile" xml:space="preserve">
+    <value>Cannot write xml to the file</value>
+  </data>
+  <data name="File_Is_Currently_In_Use" xml:space="preserve">
+    <value>File is currently in use, please, close programs, that can use it</value>
+  </data>
+  <data name="Have_No_Write_Permissions" xml:space="preserve">
+    <value>Sorry, but you have no rights to write to selected file. Program will stop writting xml to it</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error: \"{0}\"</value>
+  </data>
 </root>

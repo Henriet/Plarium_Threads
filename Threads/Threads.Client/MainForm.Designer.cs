@@ -41,6 +41,7 @@
             this.ChangeDirectoryButton = new System.Windows.Forms.Button();
             this.ChangeFileButton = new System.Windows.Forms.Button();
             this.StartButton = new System.Windows.Forms.Button();
+            this.StopButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // FolderBrowser
@@ -145,17 +146,29 @@
             this.StartButton.Enabled = false;
             this.StartButton.Location = new System.Drawing.Point(16, 119);
             this.StartButton.Name = "StartButton";
-            this.StartButton.Size = new System.Drawing.Size(473, 38);
+            this.StartButton.Size = new System.Drawing.Size(383, 38);
             this.StartButton.TabIndex = 12;
             this.StartButton.Text = "Scan";
             this.StartButton.UseVisualStyleBackColor = true;
             this.StartButton.Click += new System.EventHandler(this.StartClick);
+            // 
+            // StopButton
+            // 
+            this.StopButton.Enabled = false;
+            this.StopButton.Location = new System.Drawing.Point(414, 119);
+            this.StopButton.Name = "StopButton";
+            this.StopButton.Size = new System.Drawing.Size(75, 38);
+            this.StopButton.TabIndex = 13;
+            this.StopButton.Text = "Stop";
+            this.StopButton.UseVisualStyleBackColor = true;
+            this.StopButton.Click += new System.EventHandler(this.StopButtonClick);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(524, 536);
+            this.Controls.Add(this.StopButton);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.ChangeFileButton);
             this.Controls.Add(this.ChangeDirectoryButton);
@@ -169,6 +182,7 @@
             this.Controls.Add(this.treeView);
             this.Name = "MainForm";
             this.Text = "Information about catalog";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -189,6 +203,7 @@
         private System.Windows.Forms.Button ChangeDirectoryButton;
         private System.Windows.Forms.Button ChangeFileButton;
         private System.Windows.Forms.Button StartButton;
+        private System.Windows.Forms.Button StopButton;
     }
 }
 

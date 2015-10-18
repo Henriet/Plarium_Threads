@@ -39,7 +39,6 @@ namespace Threads.Services
 
         protected abstract void WriteEntry();
 
-
         public void Stop()
         {
             _working = false;

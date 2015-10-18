@@ -20,9 +20,11 @@ namespace Threads.Client
         private readonly Label _label;
 
         private const int MaxLableLength = 45;
+        public delegate void FinishScan(bool enabled);
+        private readonly FinishScan _formFinishScanDelegate;
 
-        
-        public DirectoryScanner(string path, TreeView tree, ProgressBar progressBar, Label currentSystemInfoLabel, string filePath)
+        public DirectoryScanner(string path, TreeView tree, ProgressBar progressBar, Label currentSystemInfoLabel,
+                                string filePath, FinishScan formDelegate)
         {
             Path = path;
             Tree = tree;
@@ -34,25 +36,32 @@ namespace Threads.Client
             _xmlWrittingThread = new Thread(_xmlEntryService.Write);
             _progressBar = progressBar;
             _label = currentSystemInfoLabel;
+            _formFinishScanDelegate = formDelegate;
         }
 
         public void Scan()
         {
-            _treeWrittingThread.Start();
-            _xmlWrittingThread.Start();
-            
+            try
+            {
+                _treeWrittingThread.Start();
+                _xmlWrittingThread.Start();
+            }
+            catch (ThreadStateException ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+            }
             var root = new Entry { IsRoot = true };
 
             GetEntry(root);
-
             FinishScanning();
         }
 
         private void GetEntry(Entry info)
         {
             var entry = new Entry();
-            if (!Directory.Exists(Path) && !File.Exists(Path))
+            if (!Directory.Exists(Path) && !File.Exists(Path) || info == null)
                 return;
+
             entry.Info = Helpers.GetEntryInfo(Path);
 
             if (!info.IsRoot)
@@ -93,37 +102,67 @@ namespace Threads.Client
 
         private void PassEntryToServices(Entry entry)
         {
-            _treeEntryService.AddEntryToQueue(entry);
-            _xmlEntryService.AddEntryToQueue(entry);
-            
+            try
+            {
+                _treeEntryService.AddEntryToQueue(entry);
+                _xmlEntryService.AddEntryToQueue(entry);
+            }
+            catch (ThreadStateException ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+            }
         }
 
         private void UpdateProgress(Entry entry)
         {
-            _label.BeginInvoke((MethodInvoker)delegate
+            try
             {
-                string fullName = entry.Info.FullName;
-                string text = fullName.Length < MaxLableLength ? fullName :  String.Format("...{0}",fullName.Substring(fullName.Length - MaxLableLength));
+                _label.BeginInvoke((MethodInvoker)delegate
+                {
+                    string fullName = entry.Info.FullName;
+                    string text = fullName.Length < MaxLableLength
+                        ? fullName
+                        : String.Format("...{0}", fullName.Substring(fullName.Length - MaxLableLength));
 
-                _label.Text = text;
-            });
+                    _label.Text = text;
+                });
 
-            _progressBar.BeginInvoke((MethodInvoker)delegate
+                _progressBar.BeginInvoke((MethodInvoker)delegate
+                {
+                    if (_progressBar.Value < _progressBar.Maximum)
+                        _progressBar.Value++;
+                });
+            }
+            catch (Exception ex)
             {
-                if(_progressBar.Value < _progressBar.Maximum)
-                     _progressBar.Value++;
-            });
+                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+            }
         }
 
         private void FinishScanning()
         {
-            _label.BeginInvoke((MethodInvoker)delegate
+            try
             {
-                _label.Text = String.Empty;
-            });
-            
-            _treeEntryService.Stop();
-            _xmlEntryService.Stop();
+                _label.BeginInvoke((MethodInvoker)delegate
+                {
+                    _label.Text = String.Empty;
+                    _formFinishScanDelegate(true);
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+            }
+
+            try
+            {
+                _treeEntryService.Stop();
+                _xmlEntryService.Stop();
+            }
+            catch (ThreadStateException ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+            }
         }
     }
 }

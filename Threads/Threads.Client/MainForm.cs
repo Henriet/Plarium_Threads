@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Threads.Client.Properties;
@@ -9,6 +10,7 @@ namespace Threads.Client
     {
         private bool _fileSelected;
         private bool _directorySelected;
+        private Thread _thread;
 
         public MainForm()
         {
@@ -19,20 +21,31 @@ namespace Threads.Client
         {
             if (_directorySelected && _fileSelected)
             {
+                StopThread();
+
                 var selectedPath = FolderBrowser.SelectedPath;
                 progressBar.Maximum = Helpers.GetCountOfEntries(selectedPath);
                 progressBar.Value = 0;
                 try
                 {
                     var scanner = new DirectoryScanner(selectedPath, treeView, progressBar, CurrentFileNameLabel,
-                        SelectedFileNameLabel.Text);
+                        SelectedFileNameLabel.Text, EnabledButtons);
 
-                    var thread = new Thread(() => scanner.Scan());
-                    thread.Start();
+                    EnabledButtons(false);
+                    _thread = new Thread(() => scanner.Scan());
+                    _thread.Start();
                 }
-                catch (ArgumentException ex)
+                catch (ArgumentException)
                 {
-                    MessageBox.Show(String.Format("Directory {0} doesn't exist", selectedPath));
+                    MessageBox.Show(String.Format(Resources.MainForm_DirectoryDoes_not_exsist, selectedPath));
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    MessageBox.Show(String.Format(Resources.Access_denided_For, saveFileDialog.FileName));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
                 }
             }
             else
@@ -63,6 +76,32 @@ namespace Threads.Client
 
             if (_directorySelected && _fileSelected)
                 StartButton.Enabled = true;
+        }
+
+        private void EnabledButtons(bool enabled)
+        {
+            StartButton.Enabled = enabled;
+            ChangeDirectoryButton.Enabled = enabled;
+            ChangeFileButton.Enabled = enabled;
+            StopButton.Enabled = !enabled;
+        }
+
+        private void StopButtonClick(object sender, EventArgs e)
+        {
+             StopThread();
+             EnabledButtons(true);
+        }
+
+        private void StopThread()
+        {
+            if (_thread != null && _thread.IsAlive)
+                _thread.Abort();
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            StopThread();
+            Application.Exit();
         }
     }
 }

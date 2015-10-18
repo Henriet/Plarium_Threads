@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.Windows.Forms;
 using System.Xml;
 using Threads.Domain;
 using Threads.Services.Properties;
@@ -22,7 +24,14 @@ namespace Threads.Services
         protected override void WriteEntry()
         {
             var node = AddNewEntry(CurrentEntry);
-            _helpers.WriteToFile(node.OuterXml); 
+            try
+            {
+                _helpers.WriteToFile(node.OuterXml);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Stop();
+            }
         }
 
         private XmlElement AddNewEntry(Entry entry)
@@ -40,9 +49,16 @@ namespace Threads.Services
 
         private void AddEntryInfoNode(string nodeName, string value, XmlElement parentElement)
         {
-            XmlElement newElement = _xmlDocument.CreateElement(nodeName);
-            newElement.InnerText = value;
-            parentElement.AppendChild(newElement);
+            try
+            {
+                XmlElement newElement = _xmlDocument.CreateElement(nodeName);
+                newElement.InnerText = value;
+                parentElement.AppendChild(newElement);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error, ex.InnerException.Message));
+            }
         }
     }
 

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Forms;
+using Threads.Services.Properties;
 
 namespace Threads.Services
 {
@@ -11,32 +13,45 @@ namespace Threads.Services
         public TreeEntryService(TreeView tree)
         {
             _tree = tree;
-            _tree.BeginInvoke((MethodInvoker)delegate
+            try
             {
-                _tree.Nodes.Clear();
-            });
+                _tree.BeginInvoke((MethodInvoker) delegate
+                {
+                    _tree.Nodes.Clear();
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error, ex.InnerException.Message));
+            }
         }
 
         protected override void WriteEntry()
         {
-            
-            _tree.Invoke((MethodInvoker)delegate
+            try
             {
-                if (CurrentEntry.Parent != null)
+                _tree.Invoke((MethodInvoker) delegate
                 {
-                    _tree.SelectedNode = _tree.Nodes.Find(CurrentEntry.Parent.Info.FullName, true).FirstOrDefault();
-
-                    if (_tree.SelectedNode != null)
+                    if (CurrentEntry.Parent != null)
                     {
-                        _tree.SelectedNode.Nodes.Add(CurrentEntry.Info.FullName, CurrentEntry.Info.Name);
-                    }
-                }
-                else
-                {
-                    _tree.Nodes.Add(CurrentEntry.Info.FullName, CurrentEntry.Info.Name);
+                        _tree.SelectedNode = _tree.Nodes.Find(CurrentEntry.Parent.Info.FullName, true).FirstOrDefault();
 
-                }
-            });
+                        if (_tree.SelectedNode != null)
+                        {
+                            _tree.SelectedNode.Nodes.Add(CurrentEntry.Info.FullName, CurrentEntry.Info.Name);
+                        }
+                    }
+                    else
+                    {
+                        _tree.Nodes.Add(CurrentEntry.Info.FullName, CurrentEntry.Info.Name);
+
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format(Resources.Error, ex.InnerException.Message));
+            }
         }
     }
 }

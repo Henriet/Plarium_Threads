@@ -61,6 +61,24 @@ namespace Threads.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access denided.
+        /// </summary>
+        internal static string Access_Denided {
+            get {
+                return ResourceManager.GetString("Access_Denided", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Access denided for {0}.
+        /// </summary>
+        internal static string Access_denided_For {
+            get {
+                return ResourceManager.GetString("Access_denided_For", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         internal static string d {
@@ -70,11 +88,29 @@ namespace Threads.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: \&quot;{0}\&quot;.
+        /// </summary>
+        internal static string Error_message {
+            get {
+                return ResourceManager.GetString("Error_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Access denided for {0}.
         /// </summary>
         internal static string MainForm_AccessDenided {
             get {
                 return ResourceManager.GetString("MainForm_AccessDenided", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Directory {0} doesn&apos;t exist.
+        /// </summary>
+        internal static string MainForm_DirectoryDoes_not_exsist {
+            get {
+                return ResourceManager.GetString("MainForm_DirectoryDoes_not_exsist", resourceCulture);
             }
         }
         
