@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Forms;
 using Threads.Domain;
 
 namespace Threads.Services
 {
-    public abstract class BaseEntryHanbler
+    public abstract class BaseEntryService
     {
         private readonly Queue<Entry> _queue;
         private bool _working;
+        protected Entry CurrentEntry { get; private set; }
 
-        protected BaseEntryHanbler()
+        protected BaseEntryService()
         {
             _queue = new Queue<Entry>();
         }
 
         public void AddEntryToQueue(Entry entry)
         {
-            lock(_queue)
+            lock (_queue)
             {
                 _queue.Enqueue(entry);
             }
@@ -27,17 +27,18 @@ namespace Threads.Services
             _working = true;
             while (_working)
             {
-                if(_queue.Count == 0)
+                if (_queue.Count == 0)
                     continue;
                 lock (_queue)
                 {
-                    WriteEntry(_queue.Dequeue());
+                    CurrentEntry = _queue.Dequeue();
+                    WriteEntry();
                 }
             }
         }
 
-        protected abstract void WriteEntry(Entry entry);
-        
+        protected abstract void WriteEntry();
+
 
         public void Stop()
         {

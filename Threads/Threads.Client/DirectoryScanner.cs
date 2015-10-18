@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using Threads.Client.Properties;
 using Threads.Domain;
 using Threads.Services;
 
@@ -10,24 +12,26 @@ namespace Threads.Client
     {
         private string Path { get; set; }
         private TreeView Tree { get; set; }
-        private readonly XmlEntryHandler _xmlEntryHandler;
-        private readonly TreeEntryHandler _treeEntryHandler;
+        private readonly XmlEntryService _xmlEntryService;
+        private readonly TreeEntryService _treeEntryService;
         private readonly Thread _treeWrittingThread;
         private readonly Thread _xmlWrittingThread;
         private readonly ProgressBar _progressBar;
         private readonly Label _label;
 
+        private const int MaxLableLength = 45;
+
         
-        public DirectoryScanner(string path, TreeView tree, ProgressBar progressBar, Label currentSystemInfoLabel)
+        public DirectoryScanner(string path, TreeView tree, ProgressBar progressBar, Label currentSystemInfoLabel, string filePath)
         {
             Path = path;
             Tree = tree;
 
-            _xmlEntryHandler = new XmlEntryHandler();
-            _treeEntryHandler = new TreeEntryHandler(Tree);
+            _xmlEntryService = new XmlEntryService(filePath);
+            _treeEntryService = new TreeEntryService(Tree);
 
-            _treeWrittingThread = new Thread(_treeEntryHandler.Write);
-            _xmlWrittingThread = new Thread(_xmlEntryHandler.Write);
+            _treeWrittingThread = new Thread(_treeEntryService.Write);
+            _xmlWrittingThread = new Thread(_xmlEntryService.Write);
             _progressBar = progressBar;
             _label = currentSystemInfoLabel;
         }
@@ -64,26 +68,33 @@ namespace Threads.Client
             }
 
             var directoryInfo = new DirectoryInfo(Path);
-            var fileSystemInfos = directoryInfo.GetFileSystemInfos();
-            
+            FileSystemInfo[] fileSystemInfos;
+            try
+            {
+                fileSystemInfos = directoryInfo.GetFileSystemInfos();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show(String.Format(Resources.MainForm_AccessDenided, Path));
+                return;
+            }
             foreach (var fileSystemInfo in fileSystemInfos)
             {
                 Path = fileSystemInfo.FullName;
                 GetEntry(entry);
             }
-
         }
 
         private void PassEntry(Entry entry)
         {
-            PassEntryToHandlers(entry);
+            PassEntryToServices(entry);
             UpdateProgress(entry);
         }
 
-        private void PassEntryToHandlers(Entry entry)
+        private void PassEntryToServices(Entry entry)
         {
-            _treeEntryHandler.AddEntryToQueue(entry);
-            _xmlEntryHandler.AddEntryToQueue(entry);
+            _treeEntryService.AddEntryToQueue(entry);
+            _xmlEntryService.AddEntryToQueue(entry);
             
         }
 
@@ -91,7 +102,10 @@ namespace Threads.Client
         {
             _label.BeginInvoke((MethodInvoker)delegate
             {
-                _label.Text = entry.Info.FullName;
+                string fullName = entry.Info.FullName;
+                string text = fullName.Length < MaxLableLength ? fullName :  String.Format("...{0}",fullName.Substring(fullName.Length - MaxLableLength));
+
+                _label.Text = text;
             });
 
             _progressBar.BeginInvoke((MethodInvoker)delegate
@@ -105,11 +119,11 @@ namespace Threads.Client
         {
             _label.BeginInvoke((MethodInvoker)delegate
             {
-                _label.Text = "";
+                _label.Text = String.Empty;
             });
             
-            _treeEntryHandler.Stop();
-            _xmlEntryHandler.Stop();
+            _treeEntryService.Stop();
+            _xmlEntryService.Stop();
         }
     }
 }

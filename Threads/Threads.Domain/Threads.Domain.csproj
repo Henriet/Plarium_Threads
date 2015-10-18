@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="Entry.cs" />
     <Compile Include="EntryInfo.cs" />
-    <Compile Include="EntryType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

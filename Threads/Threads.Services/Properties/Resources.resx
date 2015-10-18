@@ -117,25 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MainForm_Error" xml:space="preserve">
-    <value>Error</value>
+  <data name="Services_Modification_Time" xml:space="preserve">
+    <value>Modification_Time</value>
   </data>
-  <data name="MainForm_FolderBrowserDialog_Description_Select_folder_to_scan" xml:space="preserve">
-    <value>Select folder to scan</value>
+  <data name="Services_Owner" xml:space="preserve">
+    <value>Owner</value>
   </data>
-  <data name="MainForm_StartClick_Please__select_file_and_folder" xml:space="preserve">
-    <value>Please, select file and folder</value>
+  <data name="Services_Size" xml:space="preserve">
+    <value>Size</value>
   </data>
-  <data name="MainForm_Text_file_extension" xml:space="preserve">
-    <value>*.xml</value>
+  <data name="Service_Creation_Time" xml:space="preserve">
+    <value>Creation_Time</value>
   </data>
-  <data name="MainForm_TextFilesExtension" xml:space="preserve">
-    <value>XML files (*.xml)|*.xml</value>
+  <data name="Service_Entries" xml:space="preserve">
+    <value>Entries</value>
   </data>
-  <data name="d" xml:space="preserve">
-    <value />
+  <data name="Service_entry" xml:space="preserve">
+    <value>entry</value>
   </data>
-  <data name="MainForm_AccessDenided" xml:space="preserve">
-    <value>Access denided for {0}</value>
+  <data name="Service_FullName" xml:space="preserve">
+    <value>Full_Name</value>
+  </data>
+  <data name="Service_Last_Data_Access_Time" xml:space="preserve">
+    <value>Last_Data_Access_Time</value>
   </data>
 </root>

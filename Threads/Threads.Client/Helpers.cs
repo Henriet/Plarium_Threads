@@ -16,7 +16,6 @@ namespace Threads.Client
 
             var entryInfo = new EntryInfo
             {
-                EntryType = IsDirectory(path) ? EntryType.Directory : EntryType.File,
                 Name = entry.Name,
                 FullName = entry.FullName,
                 CreationTime = entry.CreationTime,
@@ -27,19 +26,26 @@ namespace Threads.Client
                     : File.GetAccessControl(path).GetOwner(typeof (System.Security.Principal.NTAccount)).ToString()
             };
 
-
+                
 
             if (_isDirectory)
             {
                 var directory = (DirectoryInfo) entry;
-                var directories = directory.GetFiles();
+                try
+                {
+                    var directories = directory.GetFiles();
 
-                entryInfo.Size = directories.Select(fileInfo => fileInfo.Length).Sum();
+                    entryInfo.Size = directories.Select(fileInfo => fileInfo.Length).Sum().ToString();
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    entryInfo.Size = "Acess denided";
+                }
             }
             else
             {
                 var file = (FileInfo) entry;
-                entryInfo.Size = file.Length;
+                entryInfo.Size = file.Length.ToString();
             }
 
             return entryInfo;
@@ -52,7 +58,6 @@ namespace Threads.Client
             return (attr & FileAttributes.Directory) == FileAttributes.Directory && Directory.Exists(path);
         }
 
-
         private static string Path { get; set; }
         private static bool _isDirectory { get { return IsDirectory(Path); } }
 
@@ -62,7 +67,24 @@ namespace Threads.Client
                 throw new ArgumentException();
 
             var directoryInfo = new DirectoryInfo(path);
-            return directoryInfo.GetFileSystemInfos().Length;
+            int count = 0;
+            GetCountOfFiles(ref count, directoryInfo);
+            return count;
+        }
+
+        private static void GetCountOfFiles(ref int count, DirectoryInfo info)
+        {
+            try
+            {
+                var directories = info.GetDirectories();
+
+                foreach (var directoryInfo in directories)
+                {
+                    GetCountOfFiles(ref count, directoryInfo);
+                    count += directoryInfo.GetFiles().Length;
+                }
+            }
+            catch(UnauthorizedAccessException) {  }
         }
     }
 }

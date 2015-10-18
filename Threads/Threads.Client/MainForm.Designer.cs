@@ -31,14 +31,6 @@
             this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.treeView = new System.Windows.Forms.TreeView();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.Menu = new System.Windows.Forms.MenuStrip();
-            this.programToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectDirectoryToScanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectFileForXmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SelectedFileLabel = new System.Windows.Forms.Label();
             this.CurrentFileLabel = new System.Windows.Forms.Label();
             this.SelectedFileNameLabel = new System.Windows.Forms.Label();
@@ -49,8 +41,11 @@
             this.ChangeDirectoryButton = new System.Windows.Forms.Button();
             this.ChangeFileButton = new System.Windows.Forms.Button();
             this.StartButton = new System.Windows.Forms.Button();
-            this.Menu.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // FolderBrowser
+            // 
+            this.FolderBrowser.Description = "Select folder to scan";
             // 
             // treeView
             // 
@@ -64,72 +59,8 @@
             this.progressBar.Location = new System.Drawing.Point(16, 474);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(473, 40);
+            this.progressBar.Step = 1;
             this.progressBar.TabIndex = 1;
-            // 
-            // Menu
-            // 
-            this.Menu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.programToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.Menu.Location = new System.Drawing.Point(0, 0);
-            this.Menu.Name = "Menu";
-            this.Menu.Size = new System.Drawing.Size(524, 28);
-            this.Menu.TabIndex = 2;
-            this.Menu.Text = "Menu";
-            // 
-            // programToolStripMenuItem
-            // 
-            this.programToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.selectDirectoryToScanToolStripMenuItem,
-            this.selectFileForXmlToolStripMenuItem,
-            this.scanToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.programToolStripMenuItem.Name = "programToolStripMenuItem";
-            this.programToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
-            this.programToolStripMenuItem.Text = "Program";
-            // 
-            // selectDirectoryToScanToolStripMenuItem
-            // 
-            this.selectDirectoryToScanToolStripMenuItem.Name = "selectDirectoryToScanToolStripMenuItem";
-            this.selectDirectoryToScanToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
-            this.selectDirectoryToScanToolStripMenuItem.Text = "Select directory to scan";
-            this.selectDirectoryToScanToolStripMenuItem.Click += new System.EventHandler(this.ChangeDirectoryButtonClick);
-            // 
-            // selectFileForXmlToolStripMenuItem
-            // 
-            this.selectFileForXmlToolStripMenuItem.Name = "selectFileForXmlToolStripMenuItem";
-            this.selectFileForXmlToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
-            this.selectFileForXmlToolStripMenuItem.Text = "Select file for xml";
-            this.selectFileForXmlToolStripMenuItem.Click += new System.EventHandler(this.ChangeFileButtonClick);
-            // 
-            // scanToolStripMenuItem
-            // 
-            this.scanToolStripMenuItem.Name = "scanToolStripMenuItem";
-            this.scanToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
-            this.scanToolStripMenuItem.Text = "Scan";
-            this.scanToolStripMenuItem.Click += new System.EventHandler(this.StartClick);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ApplictionExit);
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showHelpToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // showHelpToolStripMenuItem
-            // 
-            this.showHelpToolStripMenuItem.Name = "showHelpToolStripMenuItem";
-            this.showHelpToolStripMenuItem.Size = new System.Drawing.Size(153, 26);
-            this.showHelpToolStripMenuItem.Text = "Show help";
             // 
             // SelectedFileLabel
             // 
@@ -184,6 +115,11 @@
             this.SelectedDirectoryNameLabel.TabIndex = 9;
             this.SelectedDirectoryNameLabel.Text = ". . .";
             // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.DefaultExt = "*.xml";
+            this.saveFileDialog.Filter = "XML files (*.xml)|*.xml";
+            // 
             // ChangeDirectoryButton
             // 
             this.ChangeDirectoryButton.Location = new System.Drawing.Point(414, 37);
@@ -206,6 +142,7 @@
             // 
             // StartButton
             // 
+            this.StartButton.Enabled = false;
             this.StartButton.Location = new System.Drawing.Point(16, 119);
             this.StartButton.Name = "StartButton";
             this.StartButton.Size = new System.Drawing.Size(473, 38);
@@ -230,12 +167,8 @@
             this.Controls.Add(this.SelectedFileLabel);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.treeView);
-            this.Controls.Add(this.Menu);
-            this.MainMenuStrip = this.Menu;
             this.Name = "MainForm";
             this.Text = "Information about catalog";
-            this.Menu.ResumeLayout(false);
-            this.Menu.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -246,9 +179,6 @@
         private System.Windows.Forms.FolderBrowserDialog FolderBrowser;
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.MenuStrip Menu;
-        private System.Windows.Forms.ToolStripMenuItem programToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.Label SelectedFileLabel;
         private System.Windows.Forms.Label CurrentFileLabel;
         private System.Windows.Forms.Label SelectedFileNameLabel;
@@ -256,11 +186,6 @@
         private System.Windows.Forms.Label SelectedDirecoryLabel;
         private System.Windows.Forms.Label SelectedDirectoryNameLabel;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
-        private System.Windows.Forms.ToolStripMenuItem selectDirectoryToScanToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectFileForXmlToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scanToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showHelpToolStripMenuItem;
         private System.Windows.Forms.Button ChangeDirectoryButton;
         private System.Windows.Forms.Button ChangeFileButton;
         private System.Windows.Forms.Button StartButton;

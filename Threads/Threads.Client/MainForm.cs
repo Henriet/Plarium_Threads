@@ -9,17 +9,10 @@ namespace Threads.Client
     {
         private bool _fileSelected;
         private bool _directorySelected;
+
         public MainForm()
         {
             InitializeComponent();
-            saveFileDialog.AddExtension = true;
-            saveFileDialog.Filter = Resources.MainForm_TextFilesExtension;
-            saveFileDialog.CheckPathExists = true;
-            saveFileDialog.DefaultExt = Resources.MainForm_Text_file_extension;
-
-            FolderBrowser.Description = Resources.MainForm_FolderBrowserDialog_Description_Select_folder_to_scan;
-            progressBar.Step = 1;
-            progressBar.Value = 0;
         }
 
         private void StartClick(object sender, EventArgs e)
@@ -29,12 +22,18 @@ namespace Threads.Client
                 var selectedPath = FolderBrowser.SelectedPath;
                 progressBar.Maximum = Helpers.GetCountOfEntries(selectedPath);
                 progressBar.Value = 0;
+                try
+                {
+                    var scanner = new DirectoryScanner(selectedPath, treeView, progressBar, CurrentFileNameLabel,
+                        SelectedFileNameLabel.Text);
 
-                var scanner = new DirectoryScanner(selectedPath, treeView, progressBar, CurrentFileNameLabel);
-
-                var thread = new Thread(() => scanner.Scan());
-                thread.Start();
-
+                    var thread = new Thread(() => scanner.Scan());
+                    thread.Start();
+                }
+                catch (ArgumentException ex)
+                {
+                    MessageBox.Show(String.Format("Directory {0} doesn't exist", selectedPath));
+                }
             }
             else
             {
@@ -43,29 +42,27 @@ namespace Threads.Client
             }
         }
 
-
         private void ChangeDirectoryButtonClick(object sender, EventArgs e)
         {
-            var result = FolderBrowser.ShowDialog();
-            if (result != DialogResult.OK) return;
-
-            _directorySelected = true;
-            SelectedDirectoryNameLabel.Text = FolderBrowser.SelectedPath;
+            ChangeClick(true, ref _directorySelected, SelectedDirectoryNameLabel);
         }
 
         private void ChangeFileButtonClick(object sender, EventArgs e)
         {
-            var result = saveFileDialog.ShowDialog();
+            ChangeClick(false, ref _fileSelected, SelectedFileNameLabel);
+        }
+
+        private void ChangeClick(bool directoryChanged, ref bool changedFlag, Label label)
+        {
+            var result = directoryChanged ? FolderBrowser.ShowDialog() : saveFileDialog.ShowDialog();
+
             if (result != DialogResult.OK) return;
 
-            _fileSelected = true;
-            SelectedFileNameLabel.Text = saveFileDialog.FileName;
-        }
+            label.Text = directoryChanged ? FolderBrowser.SelectedPath : saveFileDialog.FileName;
+            changedFlag = true;
 
-        private void ApplictionExit(object sender, EventArgs e)
-        {
-            Application.Exit();
+            if (_directorySelected && _fileSelected)
+                StartButton.Enabled = true;
         }
-
     }
 }

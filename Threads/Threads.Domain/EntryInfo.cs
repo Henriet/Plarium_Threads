@@ -10,9 +10,11 @@ namespace Threads.Domain
         public DateTime CreationTime { get; set; }
         public DateTime LastDataAccessTime { get; set; }
         public DateTime ModificationTime { get; set; }
-        public long Size { get; set; }
+        public string Size { get; set; }
         public string Owner { get; set; }
-        public FileSystemSecurity Permissions { get; set; }
-        public EntryType EntryType { get; set; }
+     //   public AuthorizationRuleCollection Permissions { get; set; } //todo
+        public bool CanRead { get; set; }
+        public bool CanWrite { get; set; }
+        public bool CanDelete { get; set; }
     }
 }

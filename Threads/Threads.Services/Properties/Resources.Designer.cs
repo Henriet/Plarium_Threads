@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Threads.Client.Properties {
+namespace Threads.Services.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Threads.Client.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Threads.Client.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Threads.Services.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,65 +61,74 @@ namespace Threads.Client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Creation_Time.
         /// </summary>
-        internal static string d {
+        internal static string Service_Creation_Time {
             get {
-                return ResourceManager.GetString("d", resourceCulture);
+                return ResourceManager.GetString("Service_Creation_Time", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Access denided for {0}.
+        ///   Looks up a localized string similar to Entries.
         /// </summary>
-        internal static string MainForm_AccessDenided {
+        internal static string Service_Entries {
             get {
-                return ResourceManager.GetString("MainForm_AccessDenided", resourceCulture);
+                return ResourceManager.GetString("Service_Entries", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error.
+        ///   Looks up a localized string similar to entry.
         /// </summary>
-        internal static string MainForm_Error {
+        internal static string Service_entry {
             get {
-                return ResourceManager.GetString("MainForm_Error", resourceCulture);
+                return ResourceManager.GetString("Service_entry", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select folder to scan.
+        ///   Looks up a localized string similar to Full_Name.
         /// </summary>
-        internal static string MainForm_FolderBrowserDialog_Description_Select_folder_to_scan {
+        internal static string Service_FullName {
             get {
-                return ResourceManager.GetString("MainForm_FolderBrowserDialog_Description_Select_folder_to_scan", resourceCulture);
+                return ResourceManager.GetString("Service_FullName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please, select file and folder.
+        ///   Looks up a localized string similar to Last_Data_Access_Time.
         /// </summary>
-        internal static string MainForm_StartClick_Please__select_file_and_folder {
+        internal static string Service_Last_Data_Access_Time {
             get {
-                return ResourceManager.GetString("MainForm_StartClick_Please__select_file_and_folder", resourceCulture);
+                return ResourceManager.GetString("Service_Last_Data_Access_Time", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to *.xml.
+        ///   Looks up a localized string similar to Modification_Time.
         /// </summary>
-        internal static string MainForm_Text_file_extension {
+        internal static string Services_Modification_Time {
             get {
-                return ResourceManager.GetString("MainForm_Text_file_extension", resourceCulture);
+                return ResourceManager.GetString("Services_Modification_Time", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to XML files (*.xml)|*.xml.
+        ///   Looks up a localized string similar to Owner.
         /// </summary>
-        internal static string MainForm_TextFilesExtension {
+        internal static string Services_Owner {
             get {
-                return ResourceManager.GetString("MainForm_TextFilesExtension", resourceCulture);
+                return ResourceManager.GetString("Services_Owner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        internal static string Services_Size {
+            get {
+                return ResourceManager.GetString("Services_Size", resourceCulture);
             }
         }
     }
