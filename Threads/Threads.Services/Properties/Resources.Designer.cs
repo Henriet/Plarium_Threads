@@ -160,6 +160,15 @@ namespace Threads.Services.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Permissions.
+        /// </summary>
+        internal static string Services_Permissions {
+            get {
+                return ResourceManager.GetString("Services_Permissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Size.
         /// </summary>
         internal static string Services_Size {
