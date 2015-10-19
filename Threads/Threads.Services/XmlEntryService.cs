@@ -45,7 +45,8 @@ namespace Threads.Services
                 {Resources.Service_Last_Data_Access_Time, entry.LastDataAccessTime.ToString(CultureInfo.InvariantCulture)},
                 {Resources.Services_Modification_Time, entry.ModificationTime.ToString(CultureInfo.InvariantCulture)},
                 {Resources.Services_Size, entry.Size},
-                {Resources.Services_Owner, entry.Owner}
+                {Resources.Services_Owner, entry.Owner},
+                {"Permissions", entry.Permissions.ToString()}
             };
             try
             {

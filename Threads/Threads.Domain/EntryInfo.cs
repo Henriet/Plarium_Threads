@@ -12,5 +12,6 @@ namespace Threads.Domain
         public DateTime ModificationTime { get; set; }
         public string Size { get; set; }
         public string Owner { get; set; }
+        public FileSystemRights Permissions { get; set; }
     }
 }

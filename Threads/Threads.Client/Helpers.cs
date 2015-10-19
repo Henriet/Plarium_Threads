@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Windows.Forms;
 using Threads.Client.Properties;
@@ -32,17 +33,27 @@ namespace Threads.Client
 
             try
             {
+                FileSystemSecurity security;
                 if (IsDirectory(path))
                 {
                     var directory = (DirectoryInfo)entry;
                     var directories = directory.GetFiles();
                     var filesLength = directories.Select(fileInfo => fileInfo.Length);
                     entryInfo.Size = filesLength.Sum().ToString();
+
+                    security = directory.GetAccessControl();
                 }
                 else
                 {
                     var file = (FileInfo)entry;
                     entryInfo.Size = file.Length.ToString();
+                    security = file.GetAccessControl();
+                }
+                foreach (FileSystemAccessRule rule in
+                             security.GetAccessRules(true, true, typeof(NTAccount)))
+                {
+                    entryInfo.Permissions = rule.FileSystemRights;
+                    return entryInfo;
                 }
             }
             catch (UnauthorizedAccessException)
@@ -54,7 +65,6 @@ namespace Threads.Client
                 WriteToLog(Resources.Error_message, ex.Message);
             }
             return entryInfo;
-
         }
 
         public static bool IsDirectory(string path)
