@@ -8,10 +8,11 @@ namespace Threads.Services
     public class TreeEntryService : BaseEntryService
     {
         private readonly TreeView _tree;
+        private readonly Helpers _helpers;
 
-
-        public TreeEntryService(TreeView tree)
+        public TreeEntryService(TreeView tree, TextBox erroLogTextBox)
         {
+            _helpers = new Helpers(String.Empty, erroLogTextBox);
             _tree = tree;
             try
             {
@@ -22,7 +23,7 @@ namespace Threads.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format(Resources.Error, ex.InnerException.Message));
+                _helpers.WriteToLog(Resources.Error, ex.Message);
             }
         }
 
@@ -50,7 +51,7 @@ namespace Threads.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format(Resources.Error, ex.InnerException.Message));
+                _helpers.WriteToLog(Resources.Error, ex.Message);
             }
         }
     }

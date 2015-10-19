@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Xml;
@@ -12,18 +13,18 @@ namespace Threads.Services
         private readonly XmlDocument _xmlDocument;
         private readonly Helpers _helpers;
 
-        public XmlEntryService(string path)
+        public XmlEntryService(string path, TextBox erroLogTextBox)
         {
             _xmlDocument = new XmlDocument();
             var entryNode = _xmlDocument.CreateElement(Resources.Service_Entries);
             _xmlDocument.AppendChild(entryNode);
-            _helpers = new Helpers(path);
+            _helpers = new Helpers(path, erroLogTextBox);
             _helpers.ClearFile();
         }
 
         protected override void WriteEntry()
         {
-            var node = AddNewEntry(CurrentEntry);
+            var node = AddNewEntry(CurrentEntry.Info);
             try
             {
                 _helpers.WriteToFile(node.OuterXml);
@@ -34,32 +35,33 @@ namespace Threads.Services
             }
         }
 
-        private XmlElement AddNewEntry(Entry entry)
+        private XmlElement AddNewEntry(EntryInfo entry) 
         {
-            var entryNode = _xmlDocument.CreateElement(Resources.Service_entry);
-
-            AddEntryInfoNode(Resources.Service_FullName, entry.Info.FullName, entryNode);
-            AddEntryInfoNode(Resources.Service_Creation_Time, entry.Info.CreationTime.ToString(CultureInfo.InvariantCulture), entryNode);
-            AddEntryInfoNode(Resources.Service_Last_Data_Access_Time, entry.Info.LastDataAccessTime.ToString(CultureInfo.InvariantCulture), entryNode);
-            AddEntryInfoNode(Resources.Services_Modification_Time, entry.Info.ModificationTime.ToString(CultureInfo.InvariantCulture), entryNode);
-            AddEntryInfoNode(Resources.Services_Size, entry.Info.Size, entryNode);
-            AddEntryInfoNode(Resources.Services_Owner, entry.Info.Owner, entryNode);
-            return entryNode;
-        }
-
-        private void AddEntryInfoNode(string nodeName, string value, XmlElement parentElement)
-        {
+            var parentNode = _xmlDocument.CreateElement(Resources.Service_entry);
+            Dictionary<string, string> entryDictionary = new Dictionary<string, string>
+            {
+                {Resources.Service_FullName, entry.FullName},
+                {Resources.Service_Creation_Time, entry.CreationTime.ToString(CultureInfo.InvariantCulture)},
+                {Resources.Service_Last_Data_Access_Time, entry.LastDataAccessTime.ToString(CultureInfo.InvariantCulture)},
+                {Resources.Services_Modification_Time, entry.ModificationTime.ToString(CultureInfo.InvariantCulture)},
+                {Resources.Services_Size, entry.Size},
+                {Resources.Services_Owner, entry.Owner}
+            };
             try
             {
-                XmlElement newElement = _xmlDocument.CreateElement(nodeName);
-                newElement.InnerText = value;
-                parentElement.AppendChild(newElement);
+                foreach (var entryElement in entryDictionary)
+                {
+                    XmlElement newElement = _xmlDocument.CreateElement(entryElement.Key);
+                    newElement.InnerText = entryElement.Value;
+                    parentNode.AppendChild(newElement);
+                }
+                
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format(Resources.Error, ex.InnerException.Message));
+                _helpers.WriteToLog(Resources.Error, ex.Message);
             }
+            return parentNode;
         }
     }
-
 }

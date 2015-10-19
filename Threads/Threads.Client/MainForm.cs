@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Threads.Client.Properties;
@@ -11,10 +10,12 @@ namespace Threads.Client
         private bool _fileSelected;
         private bool _directorySelected;
         private Thread _thread;
+        private DirectoryScanner _scanner;
 
         public MainForm()
         {
             InitializeComponent();
+            Helpers.ErrorLogTextBox = ErrorLogTextBox;
         }
 
         private void StartClick(object sender, EventArgs e)
@@ -22,30 +23,32 @@ namespace Threads.Client
             if (_directorySelected && _fileSelected)
             {
                 StopThread();
-
                 var selectedPath = FolderBrowser.SelectedPath;
-                progressBar.Maximum = Helpers.GetCountOfEntries(selectedPath);
-                progressBar.Value = 0;
+               
                 try
                 {
-                    var scanner = new DirectoryScanner(selectedPath, treeView, progressBar, CurrentFileNameLabel,
-                        SelectedFileNameLabel.Text, EnabledButtons);
+                    progressBar.Maximum = Helpers.GetCountOfEntries(selectedPath);
+                    progressBar.Value = 0;
+                    var statusUpdater = new StatusUpdater(EnabledButtons){Label = CurrentFileNameLabel, ProgressBar = progressBar};
+                    _scanner = new DirectoryScanner(selectedPath, treeView, saveFileDialog.FileName, statusUpdater, ErrorLogTextBox);
 
                     EnabledButtons(false);
-                    _thread = new Thread(() => scanner.Scan());
+                    _thread = new Thread(() => _scanner.Scan());
                     _thread.Start();
                 }
                 catch (ArgumentException)
                 {
-                    MessageBox.Show(String.Format(Resources.MainForm_DirectoryDoes_not_exsist, selectedPath));
+                    Helpers.WriteToLog(Resources.MainForm_DirectoryDoes_not_exsist, selectedPath);
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show(String.Format(Resources.Access_denided_For, saveFileDialog.FileName));
+                    Helpers.WriteToLog(Resources.Access_denided_For, saveFileDialog.FileName);
                 }
+                catch (ThreadAbortException)
+                { }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+                    Helpers.WriteToLog(Resources.Error_message, ex.Message);
                 }
             }
             else
@@ -65,20 +68,19 @@ namespace Threads.Client
             ChangeClick(false, ref _fileSelected, SelectedFileNameLabel);
         }
 
-        private void ChangeClick(bool directoryChanged, ref bool changedFlag, Label label)
+        private void ChangeClick(bool directoryChanged, ref bool selectedFlag, Label label)
         {
             var result = directoryChanged ? FolderBrowser.ShowDialog() : saveFileDialog.ShowDialog();
 
             if (result != DialogResult.OK) return;
 
             label.Text = directoryChanged ? FolderBrowser.SelectedPath : saveFileDialog.FileName;
-            changedFlag = true;
+            selectedFlag = true;
 
-            if (_directorySelected && _fileSelected)
-                StartButton.Enabled = true;
+            StartButton.Enabled = _directorySelected && _fileSelected;
         }
 
-        private void EnabledButtons(bool enabled)
+        public void EnabledButtons(bool enabled)
         {
             StartButton.Enabled = enabled;
             ChangeDirectoryButton.Enabled = enabled;
@@ -94,11 +96,13 @@ namespace Threads.Client
 
         private void StopThread()
         {
+            if(_scanner != null)
+                _scanner.FinishScanning();
             if (_thread != null && _thread.IsAlive)
                 _thread.Abort();
         }
 
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             StopThread();
             Application.Exit();

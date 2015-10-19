@@ -142,7 +142,7 @@
     <value>Access denided for {0}</value>
   </data>
   <data name="Error_message" xml:space="preserve">
-    <value>Error: \"{0}\"</value>
+    <value>Error: "{0}"</value>
   </data>
   <data name="MainForm_DirectoryDoes_not_exsist" xml:space="preserve">
     <value>Directory {0} doesn't exist</value>

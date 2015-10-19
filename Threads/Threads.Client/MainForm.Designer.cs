@@ -42,6 +42,7 @@
             this.ChangeFileButton = new System.Windows.Forms.Button();
             this.StartButton = new System.Windows.Forms.Button();
             this.StopButton = new System.Windows.Forms.Button();
+            this.ErrorLogTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // FolderBrowser
@@ -163,11 +164,20 @@
             this.StopButton.UseVisualStyleBackColor = true;
             this.StopButton.Click += new System.EventHandler(this.StopButtonClick);
             // 
+            // ErrorLogTextBox
+            // 
+            this.ErrorLogTextBox.Location = new System.Drawing.Point(517, 37);
+            this.ErrorLogTextBox.Multiline = true;
+            this.ErrorLogTextBox.Name = "ErrorLogTextBox";
+            this.ErrorLogTextBox.Size = new System.Drawing.Size(307, 477);
+            this.ErrorLogTextBox.TabIndex = 14;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(524, 536);
+            this.ClientSize = new System.Drawing.Size(847, 539);
+            this.Controls.Add(this.ErrorLogTextBox);
             this.Controls.Add(this.StopButton);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.ChangeFileButton);
@@ -180,9 +190,10 @@
             this.Controls.Add(this.SelectedFileLabel);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.treeView);
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Information about catalog";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -204,6 +215,7 @@
         private System.Windows.Forms.Button ChangeFileButton;
         private System.Windows.Forms.Button StartButton;
         private System.Windows.Forms.Button StopButton;
+        private System.Windows.Forms.TextBox ErrorLogTextBox;
     }
 }
 

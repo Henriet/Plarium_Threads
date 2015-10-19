@@ -12,9 +12,5 @@ namespace Threads.Domain
         public DateTime ModificationTime { get; set; }
         public string Size { get; set; }
         public string Owner { get; set; }
-     //   public AuthorizationRuleCollection Permissions { get; set; } //todo
-        public bool CanRead { get; set; }
-        public bool CanWrite { get; set; }
-        public bool CanDelete { get; set; }
     }
 }

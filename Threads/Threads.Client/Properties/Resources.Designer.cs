@@ -88,7 +88,7 @@ namespace Threads.Client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: \&quot;{0}\&quot;.
+        ///   Looks up a localized string similar to Error: &quot;{0}&quot;.
         /// </summary>
         internal static string Error_message {
             get {

@@ -11,58 +11,45 @@ namespace Threads.Client
     public class DirectoryScanner
     {
         private string Path { get; set; }
-        private TreeView Tree { get; set; }
+
         private readonly XmlEntryService _xmlEntryService;
         private readonly TreeEntryService _treeEntryService;
-        private readonly Thread _treeWrittingThread;
-        private readonly Thread _xmlWrittingThread;
-        private readonly ProgressBar _progressBar;
-        private readonly Label _label;
+        private  Thread _treeWrittingThread;
+        private  Thread _xmlWrittingThread;
+        private readonly StatusUpdater _statusUpdater;
 
-        private const int MaxLableLength = 45;
-        public delegate void FinishScan(bool enabled);
-        private readonly FinishScan _formFinishScanDelegate;
-
-        public DirectoryScanner(string path, TreeView tree, ProgressBar progressBar, Label currentSystemInfoLabel,
-                                string filePath, FinishScan formDelegate)
+        public DirectoryScanner(string path, TreeView tree, string filePath, StatusUpdater updater, TextBox erroLogTextBox)
         {
             Path = path;
-            Tree = tree;
-
-            _xmlEntryService = new XmlEntryService(filePath);
-            _treeEntryService = new TreeEntryService(Tree);
-
-            _treeWrittingThread = new Thread(_treeEntryService.Write);
-            _xmlWrittingThread = new Thread(_xmlEntryService.Write);
-            _progressBar = progressBar;
-            _label = currentSystemInfoLabel;
-            _formFinishScanDelegate = formDelegate;
+            _xmlEntryService = new XmlEntryService(filePath, erroLogTextBox);
+            _treeEntryService = new TreeEntryService(tree, erroLogTextBox); 
+            _statusUpdater = updater;
         }
 
         public void Scan()
         {
             try
             {
+                _treeWrittingThread = new Thread(_treeEntryService.Write);
+                _xmlWrittingThread = new Thread(_xmlEntryService.Write);
                 _treeWrittingThread.Start();
                 _xmlWrittingThread.Start();
-            }
-            catch (ThreadStateException ex)
-            {
-                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
-            }
-            var root = new Entry { IsRoot = true };
 
-            GetEntry(root);
-            FinishScanning();
+                var root = new Entry { IsRoot = true };
+                GetEntry(root);
+                FinishScanning();
+            }
+            catch (Exception ex)
+            {
+                Helpers.WriteToLog(Resources.Error_message, ex.Message);
+            }
         }
 
         private void GetEntry(Entry info)
         {
-            var entry = new Entry();
             if (!Directory.Exists(Path) && !File.Exists(Path) || info == null)
                 return;
-
-            entry.Info = Helpers.GetEntryInfo(Path);
+            var entry = new Entry { Info = Helpers.GetEntryInfo(Path) };
 
             if (!info.IsRoot)
             {
@@ -71,33 +58,32 @@ namespace Threads.Client
             }
             PassEntry(entry);
 
+            //if entry is directory - get files and subdirectories for it and recursively call this method for each of them
             if (!Helpers.IsDirectory(Path))
             {
                 return;
             }
 
             var directoryInfo = new DirectoryInfo(Path);
-            FileSystemInfo[] fileSystemInfos;
             try
             {
-                fileSystemInfos = directoryInfo.GetFileSystemInfos();
+                var fileSystemInfos = directoryInfo.GetFileSystemInfos();
+                foreach (var fileSystemInfo in fileSystemInfos)
+                {
+                    Path = fileSystemInfo.FullName;
+                    GetEntry(entry);
+                }
             }
-            catch (UnauthorizedAccessException)
+            catch (Exception ex)
             {
-                MessageBox.Show(String.Format(Resources.MainForm_AccessDenided, Path));
-                return;
-            }
-            foreach (var fileSystemInfo in fileSystemInfos)
-            {
-                Path = fileSystemInfo.FullName;
-                GetEntry(entry);
+                Helpers.WriteToLog(Resources.Error_message, ex.Message);
             }
         }
 
         private void PassEntry(Entry entry)
         {
             PassEntryToServices(entry);
-            UpdateProgress(entry);
+            _statusUpdater.UpdateProgress(entry.Info.FullName);
         }
 
         private void PassEntryToServices(Entry entry)
@@ -109,59 +95,29 @@ namespace Threads.Client
             }
             catch (ThreadStateException ex)
             {
-                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+                Helpers.WriteToLog(Resources.Error_message, ex.Message);
             }
         }
 
-        private void UpdateProgress(Entry entry)
+
+        public void FinishScanning()
         {
-            try
-            {
-                _label.BeginInvoke((MethodInvoker)delegate
-                {
-                    string fullName = entry.Info.FullName;
-                    string text = fullName.Length < MaxLableLength
-                        ? fullName
-                        : String.Format("...{0}", fullName.Substring(fullName.Length - MaxLableLength));
-
-                    _label.Text = text;
-                });
-
-                _progressBar.BeginInvoke((MethodInvoker)delegate
-                {
-                    if (_progressBar.Value < _progressBar.Maximum)
-                        _progressBar.Value++;
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
-            }
-        }
-
-        private void FinishScanning()
-        {
-            try
-            {
-                _label.BeginInvoke((MethodInvoker)delegate
-                {
-                    _label.Text = String.Empty;
-                    _formFinishScanDelegate(true);
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
-            }
-
             try
             {
                 _treeEntryService.Stop();
                 _xmlEntryService.Stop();
+                _statusUpdater.Finish();
             }
-            catch (ThreadStateException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+                Helpers.WriteToLog(Resources.Error_message, ex.Message);
+            }
+            finally
+            {
+                if(_treeEntryService.Working)
+                    _treeEntryService.Stop();
+                if(_xmlEntryService.Working)
+                    _xmlEntryService.Stop();
             }
         }
     }

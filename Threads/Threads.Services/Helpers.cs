@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using Threads.Services.Properties;
 
@@ -8,9 +9,12 @@ namespace Threads.Services
     class Helpers
     {
         private readonly string _path;
-        public Helpers(string path)
+        private readonly TextBox _erroLogTextBox;
+
+        public Helpers(string path, TextBox erroLogTextBox)
         {
             _path = path;
+            _erroLogTextBox = erroLogTextBox;
         }
 
         public void WriteToFile(string text)
@@ -24,16 +28,16 @@ namespace Threads.Services
             }
             catch (IOException)
             {
-                MessageBox.Show(Resources.File_Is_Currently_In_Use);
+                WriteToLog(Resources.File_Is_Currently_In_Use, String.Empty);
             }
             catch (UnauthorizedAccessException)
             {
-                MessageBox.Show(Resources.Have_No_Write_Permissions);
                 throw new UnauthorizedAccessException();
+                WriteToLog(Resources.Have_No_Write_Permissions, String.Empty);
             }
             catch (Exception)
             {
-                MessageBox.Show(Resources.Services_CannotWriteToTheFile);
+                WriteToLog(Resources.Services_CannotWriteToTheFile, String.Empty);
             }
         }
 
@@ -48,7 +52,19 @@ namespace Threads.Services
             }
             catch (Exception)
             {
-                MessageBox.Show(Resources.Services_CannotWriteToTheFile);
+                WriteToLog(Resources.Services_CannotWriteToTheFile, String.Empty);
+            }
+        }
+
+        public void WriteToLog(string text, string error)
+        {
+            try
+            {
+                _erroLogTextBox.AppendText(String.Format(text, error) + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format(text, error));
             }
         }
     }

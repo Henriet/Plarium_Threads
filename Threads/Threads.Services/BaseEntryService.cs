@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Forms;
 using Threads.Domain;
 
 namespace Threads.Services
@@ -6,7 +7,7 @@ namespace Threads.Services
     public abstract class BaseEntryService
     {
         private readonly Queue<Entry> _queue;
-        private bool _working;
+        public bool Working { get; private set; }
         protected Entry CurrentEntry { get; private set; }
 
         protected BaseEntryService()
@@ -24,8 +25,8 @@ namespace Threads.Services
 
         public void Write()
         {
-            _working = true;
-            while (_working)
+            Working = true;
+            while (Working)
             {
                 if (_queue.Count == 0)
                     continue;
@@ -41,7 +42,7 @@ namespace Threads.Services
 
         public void Stop()
         {
-            _working = false;
+            Working = false;
         }
     }
 }

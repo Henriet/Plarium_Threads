@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Security.Principal;
 using System.Windows.Forms;
 using Threads.Client.Properties;
 using Threads.Domain;
@@ -10,10 +10,10 @@ namespace Threads.Client
 {
     public class Helpers
     {
+        public static TextBox ErrorLogTextBox;
+
         public static EntryInfo GetEntryInfo(string path)
         {
-            Path = path;
-            
             FileSystemInfo entry = IsDirectory(path)
                ? (FileSystemInfo)new DirectoryInfo(path)
                : new FileInfo(path);
@@ -25,44 +25,34 @@ namespace Threads.Client
                 CreationTime = entry.CreationTime,
                 LastDataAccessTime = entry.LastAccessTime,
                 ModificationTime = entry.LastWriteTime,
-                Owner = _isDirectory
-                    ? Directory.GetAccessControl(path).GetOwner(typeof(System.Security.Principal.NTAccount)).ToString()
-                    : File.GetAccessControl(path).GetOwner(typeof(System.Security.Principal.NTAccount)).ToString()
+                Owner = IsDirectory(path)
+                    ? Directory.GetAccessControl(path).GetOwner(typeof(NTAccount)).ToString()
+                    : File.GetAccessControl(path).GetOwner(typeof(NTAccount)).ToString()
             };
 
-
-
-            if (_isDirectory)
+            try
             {
-                try
+                if (IsDirectory(path))
                 {
                     var directory = (DirectoryInfo)entry;
                     var directories = directory.GetFiles();
-
-                    entryInfo.Size = directories.Select(fileInfo => fileInfo.Length).Sum().ToString();
+                    var filesLength = directories.Select(fileInfo => fileInfo.Length);
+                    entryInfo.Size = filesLength.Sum().ToString();
                 }
-                catch (UnauthorizedAccessException)
-                {
-                    entryInfo.Size = Resources.Access_Denided;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
-                }
-            }
-            else
-            {
-                try
+                else
                 {
                     var file = (FileInfo)entry;
                     entryInfo.Size = file.Length.ToString();
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
-                }
             }
-
+            catch (UnauthorizedAccessException)
+            {
+                entryInfo.Size = Resources.Access_Denided;
+            }
+            catch (Exception ex)
+            {
+                WriteToLog(Resources.Error_message, ex.Message);
+            }
             return entryInfo;
 
         }
@@ -70,24 +60,22 @@ namespace Threads.Client
         public static bool IsDirectory(string path)
         {
             FileAttributes attr = File.GetAttributes(path);
-            return (attr & FileAttributes.Directory) == FileAttributes.Directory && Directory.Exists(path);
+            bool isDirectory = (attr & FileAttributes.Directory) == FileAttributes.Directory && Directory.Exists(path);
+            return isDirectory;
         }
-
-        private static string Path { get; set; }
-        private static bool _isDirectory { get { return IsDirectory(Path); } }
-
+        
         public static int GetCountOfEntries(string path)
         {
             if (!Directory.Exists(path))
-                throw new ArgumentException();
+                return 0;
 
             var directoryInfo = new DirectoryInfo(path);
             int count = 0;
-            GetCountOfFiles(ref count, directoryInfo);
+            GetLengthOfFiles(ref count, directoryInfo);
             return count;
         }
 
-        private static void GetCountOfFiles(ref int count, DirectoryInfo info)
+        private static void GetLengthOfFiles(ref int count, DirectoryInfo info)
         {
             try
             {
@@ -95,13 +83,26 @@ namespace Threads.Client
 
                 foreach (var directoryInfo in directories)
                 {
-                    GetCountOfFiles(ref count, directoryInfo);
+                    GetLengthOfFiles(ref count, directoryInfo);
                     count += directoryInfo.GetFiles().Length;
                 }
             }
             catch (UnauthorizedAccessException ex)
             {
-                MessageBox.Show(String.Format(Resources.Error_message, ex.InnerException.Message));
+                 WriteToLog(Resources.Error_message, ex.Message);
+            }
+        }
+
+
+        public static void WriteToLog(string text, string error)
+        {
+            try
+            {
+                ErrorLogTextBox.AppendText(String.Format(text, error) + Environment.NewLine);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(String.Format(text, error));
             }
         }
     }
