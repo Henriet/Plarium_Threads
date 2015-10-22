@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Threading;
 using System.Windows.Forms;
 using Threads.Client.Properties;
 using Threads.Domain;
@@ -73,16 +74,21 @@ namespace Threads.Client
             bool isDirectory = (attr & FileAttributes.Directory) == FileAttributes.Directory && Directory.Exists(path);
             return isDirectory;
         }
-        
-        public static int GetCountOfEntries(string path)
+
+        public static void SetMaximumForProgressBar(string path, ref int value, EventWaitHandle autoReset)
         {
             if (!Directory.Exists(path))
-                return 0;
+            {
+                value = 0;
+                autoReset.Set();
+                return;
+            }
 
             var directoryInfo = new DirectoryInfo(path);
             int count = 0;
             GetLengthOfFiles(ref count, directoryInfo);
-            return count;
+            value = count;
+            autoReset.Set();
         }
 
         private static void GetLengthOfFiles(ref int count, DirectoryInfo info)

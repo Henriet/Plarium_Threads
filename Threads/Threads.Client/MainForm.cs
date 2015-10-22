@@ -27,7 +27,13 @@ namespace Threads.Client
                
                 try
                 {
-                    progressBar.Maximum = Helpers.GetCountOfEntries(selectedPath);
+                    int countOfEntries = 0;
+                    EventWaitHandle eventWaitHandle = new AutoResetEvent(false);
+                    var helperThread = new Thread( () => Helpers.SetMaximumForProgressBar(selectedPath, ref countOfEntries, eventWaitHandle));
+                    helperThread.Start();
+                    eventWaitHandle.WaitOne();
+
+                    progressBar.Maximum = countOfEntries;
                     progressBar.Value = 0;
                     var statusUpdater = new StatusUpdater(EnabledButtons){Label = CurrentFileNameLabel, ProgressBar = progressBar};
                     _scanner = new DirectoryScanner(selectedPath, treeView, saveFileDialog.FileName, statusUpdater, ErrorLogTextBox);
